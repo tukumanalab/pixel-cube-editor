@@ -109,28 +109,16 @@ class App {
     });
 
     // Face copy functionality
-    let copiedFace = null;
-    const copyBtn = document.getElementById('copy-face-btn');
     const pasteBtn = document.getElementById('paste-face-btn');
     const targetSelect = document.getElementById('target-face-select');
 
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        copiedFace = this.editorState.currentFace;
-        alert(`${copiedFace}面をコピーしました`);
-      });
-    }
-
     if (pasteBtn && targetSelect) {
       pasteBtn.addEventListener('click', () => {
-        if (!copiedFace) {
-          alert('まず面をコピーしてください');
-          return;
-        }
+        const sourceFace = this.editorState.currentFace;
         const targetFace = targetSelect.value;
-        this.editorState.copyFace(copiedFace, targetFace);
+        this.editorState.copyFace(sourceFace, targetFace);
         this.history.saveState();
-        alert(`${copiedFace}面を${targetFace}面に貼り付けました`);
+        alert(`${sourceFace}面を${targetFace}面に貼り付けました`);
       });
     }
 

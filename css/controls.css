@@ -30,15 +30,6 @@
   border-color: var(--primary-color);
 }
 
-.current-color-display {
-  width: 50px;
-  height: 50px;
-  border: 2px solid var(--border-color);
-  border-radius: 4px;
-  background-color: #000000;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* History Controls */
 .history-controls {
   display: flex;
@@ -101,8 +92,4 @@
 
 .palette-color:hover .remove-color {
   display: block;
-}
-
-#add-color-btn {
-  width: 100%;
 }

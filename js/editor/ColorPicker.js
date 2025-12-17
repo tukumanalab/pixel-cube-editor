@@ -5,7 +5,6 @@ export class ColorPicker {
     this.colorPickerElement = colorPickerElement;
     this.paletteContainer = paletteContainer;
     this.editorState = editorState;
-    this.currentColorDisplay = document.getElementById('current-color-display');
 
     // Default Minecraft-inspired color palette
     this.palette = [
@@ -54,26 +53,11 @@ export class ColorPicker {
 
     // Render palette
     this.renderPalette();
-
-    // Update current color display
-    this.updateCurrentColorDisplay();
-
-    // Subscribe to color changes
-    this.editorState.subscribe('colorChange', () => {
-      this.updateCurrentColorDisplay();
-    });
   }
 
   setColor(color) {
     this.editorState.setCurrentColor(color);
     this.colorPickerElement.value = color;
-    this.updateCurrentColorDisplay();
-  }
-
-  updateCurrentColorDisplay() {
-    if (this.currentColorDisplay) {
-      this.currentColorDisplay.style.backgroundColor = this.editorState.currentColor;
-    }
   }
 
   renderPalette() {
