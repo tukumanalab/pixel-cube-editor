@@ -26,17 +26,8 @@
     </header>
 
     <div class="app-layout">
-      <!-- Left Column -->
-      <div class="left-column">
-        <!-- 3D Preview -->
-        <div class="preview-section">
-          <h2>3D Preview</h2>
-          <div id="three-preview" class="preview-container"></div>
-        </div>
-      </div>
-
-      <!-- Right Column -->
-      <div class="right-column">
+      <!-- Top Section: Controls -->
+      <div class="controls-section">
         <!-- Toolbar -->
         <div class="toolbar">
           <div class="color-picker-section">
@@ -81,8 +72,17 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Pixel Grid -->
+      <!-- Bottom Section: Preview and Editor -->
+      <div class="main-section">
+        <!-- 3D Preview -->
+        <div class="preview-section">
+          <h2>3D Preview</h2>
+          <div id="three-preview" class="preview-container"></div>
+        </div>
+
+        <!-- Pixel Editor -->
         <div class="editor-section">
           <h2>Pixel Editor - <span id="current-face-label">Front</span></h2>
           <div class="history-controls">
