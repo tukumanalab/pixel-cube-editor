@@ -2,14 +2,14 @@
 
 export class EditorState {
   constructor() {
-    // Initialize 6 faces with 16x16 white pixels
+    // Initialize 6 faces with TNT block sample
     this.faces = {
-      top: this.createEmptyFace(),
-      bottom: this.createEmptyFace(),
-      front: this.createEmptyFace(),
-      back: this.createEmptyFace(),
-      left: this.createEmptyFace(),
-      right: this.createEmptyFace()
+      top: this.createTNTTop(),
+      bottom: this.createTNTTop(),
+      front: this.createTNTSide(),
+      back: this.createTNTSide(),
+      left: this.createTNTSide(),
+      right: this.createTNTSide()
     };
 
     this.currentFace = 'front';
@@ -23,6 +23,59 @@ export class EditorState {
   // Create a 16x16 array filled with white color
   createEmptyFace() {
     return Array(16).fill(null).map(() => Array(16).fill('#FFFFFF'));
+  }
+
+  // Create TNT block top/bottom face (red with white "TNT" text)
+  createTNTTop() {
+    const face = Array(16).fill(null).map(() => Array(16).fill('#DC143C')); // Crimson red
+
+    // Draw "TNT" text in white (simplified pixel art)
+    // T
+    for (let x = 2; x <= 4; x++) face[5][x] = '#FFFFFF';
+    face[6][3] = '#FFFFFF';
+    face[7][3] = '#FFFFFF';
+    face[8][3] = '#FFFFFF';
+    face[9][3] = '#FFFFFF';
+
+    // N
+    face[5][6] = '#FFFFFF';
+    face[6][6] = '#FFFFFF';
+    face[7][6] = '#FFFFFF';
+    face[8][6] = '#FFFFFF';
+    face[9][6] = '#FFFFFF';
+    face[6][7] = '#FFFFFF';
+    face[7][8] = '#FFFFFF';
+    face[5][9] = '#FFFFFF';
+    face[6][9] = '#FFFFFF';
+    face[7][9] = '#FFFFFF';
+    face[8][9] = '#FFFFFF';
+    face[9][9] = '#FFFFFF';
+
+    // T
+    for (let x = 11; x <= 13; x++) face[5][x] = '#FFFFFF';
+    face[6][12] = '#FFFFFF';
+    face[7][12] = '#FFFFFF';
+    face[8][12] = '#FFFFFF';
+    face[9][12] = '#FFFFFF';
+
+    return face;
+  }
+
+  // Create TNT block side face (red and white stripes)
+  createTNTSide() {
+    const face = this.createEmptyFace();
+    const red = '#DC143C';
+    const white = '#FFFFFF';
+
+    // Create vertical stripes pattern
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        // Alternate every 2 columns
+        face[y][x] = (Math.floor(x / 2) % 2 === 0) ? red : white;
+      }
+    }
+
+    return face;
   }
 
   // Get pixel color at position
