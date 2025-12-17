@@ -46,6 +46,7 @@
   grid-template-columns: repeat(6, 1fr);
   gap: 0.2rem;
   margin-bottom: 1.5rem;
+  max-width: 50%;
 }
 
 .face-tab {
