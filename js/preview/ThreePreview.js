@@ -18,6 +18,9 @@ export class ThreePreview {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
 
+    // Click detection state
+    this.mouseDownPosition = null;
+
     this.init();
   }
 
@@ -59,6 +62,11 @@ export class ThreePreview {
 
     // Handle window resize
     window.addEventListener('resize', () => this.onWindowResize());
+
+    // Track mousedown position for drag detection
+    this.renderer.domElement.addEventListener('mousedown', (event) => {
+      this.mouseDownPosition = { x: event.clientX, y: event.clientY };
+    });
 
     // Handle cube face clicks for flash effect
     this.renderer.domElement.addEventListener('click', (event) => this.onCanvasClick(event));
@@ -266,6 +274,19 @@ export class ThreePreview {
 
   // Handle click on canvas to flash the clicked face
   onCanvasClick(event) {
+    // Check if this is a drag operation (not a click)
+    if (!this.mouseDownPosition) return;
+
+    const distance = Math.sqrt(
+      Math.pow(event.clientX - this.mouseDownPosition.x, 2) +
+      Math.pow(event.clientY - this.mouseDownPosition.y, 2)
+    );
+
+    // Ignore clicks if mouse moved more than 5 pixels (drag operation)
+    if (distance > 5) {
+      return;
+    }
+
     // Calculate mouse position in normalized device coordinates (-1 to +1)
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;

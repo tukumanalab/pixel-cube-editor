@@ -79,20 +79,43 @@
 
 .palette-color .remove-color {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 16px;
-  height: 16px;
-  background-color: #dc3545;
-  color: white;
-  border-radius: 50%;
-  font-size: 10px;
-  line-height: 16px;
-  text-align: center;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
   cursor: pointer;
   display: none;
-  border: 1px solid white;
-  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.palette-color .remove-color:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.palette-color .remove-color::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: white;
+  transition: border-top-color 0.2s;
+}
+
+.palette-color .remove-color:hover::after {
+  border-top-color: #dc3545;
 }
 
 .palette-color:hover .remove-color {

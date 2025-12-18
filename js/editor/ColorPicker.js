@@ -6,32 +6,24 @@ export class ColorPicker {
     this.paletteContainer = paletteContainer;
     this.editorState = editorState;
 
-    // Default Minecraft-inspired color palette
+    // HTML basic 16 colors (non-deletable)
     this.palette = [
       '#FFFFFF', // White
-      '#000000', // Black
+      '#C0C0C0', // Silver
       '#808080', // Gray
-      '#C0C0C0', // Light Gray
-      '#8B4513', // Brown
-      '#D2691E', // Chocolate
-      '#228B22', // Forest Green
-      '#32CD32', // Lime Green
-      '#006400', // Dark Green
-      '#4169E1', // Royal Blue
-      '#1E90FF', // Dodger Blue
-      '#00008B', // Dark Blue
+      '#000000', // Black
       '#FF0000', // Red
-      '#DC143C', // Crimson
-      '#FFD700', // Gold
-      '#FFA500', // Orange
+      '#800000', // Maroon
       '#FFFF00', // Yellow
-      '#800080', // Purple
-      '#FF00FF', // Magenta
-      '#FFC0CB', // Pink
-      '#A52A2A', // Brown
-      '#F5DEB3', // Wheat
-      '#D2B48C', // Tan
-      '#708090'  // Slate Gray
+      '#808000', // Olive
+      '#00FF00', // Lime
+      '#008000', // Green
+      '#00FFFF', // Aqua
+      '#008080', // Teal
+      '#0000FF', // Blue
+      '#000080', // Navy
+      '#FF00FF', // Fuchsia
+      '#800080'  // Purple
     ];
 
     this.init();
@@ -80,11 +72,11 @@ export class ColorPicker {
         this.renderPalette(); // Re-render to update selected state
       });
 
-      // Remove color button (except for first few default colors)
-      if (index >= 8) {
+      // Remove color button (except for HTML basic 16 colors)
+      if (index >= 16) {
         const removeBtn = document.createElement('span');
         removeBtn.className = 'remove-color';
-        removeBtn.textContent = '×';
+        removeBtn.textContent = '削除';
         removeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.removeColor(index);
@@ -113,7 +105,7 @@ export class ColorPicker {
   }
 
   removeColor(index) {
-    if (index < 8) return; // Protect default colors
+    if (index < 16) return; // Protect HTML basic 16 colors
 
     this.palette.splice(index, 1);
     this.renderPalette();
