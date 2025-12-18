@@ -277,12 +277,9 @@ export class ThreePreview {
     // Check for intersections with the cube (not its children)
     const intersects = this.raycaster.intersectObject(this.cube, false);
 
-    console.log('Click detected, intersects:', intersects.length);
-
     if (intersects.length > 0) {
       // Get the face index from the intersection
       const faceIndex = Math.floor(intersects[0].faceIndex / 2);
-      console.log('Face index:', faceIndex);
 
       // Map material index to face name
       // Three.js BoxGeometry face order: right, left, top, bottom, front, back
@@ -302,11 +299,9 @@ export class ThreePreview {
   // Flash effect for clicked face (semi-transparent overlay)
   flashFace(materialIndex) {
     const overlay = this.faceOverlays[materialIndex];
-    console.log('flashFace called, materialIndex:', materialIndex, 'overlay:', overlay);
     if (!overlay) return;
 
     const material = overlay.material;
-    console.log('Setting opacity to 0.5, current opacity:', material.opacity);
 
     // Set to semi-transparent orange glow (50% opacity)
     material.opacity = 0.5;
