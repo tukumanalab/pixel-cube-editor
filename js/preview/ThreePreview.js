@@ -66,6 +66,10 @@ export class ThreePreview {
       this.updateAllTextures();
     });
 
+    this.editorState.subscribe('faceChange', (data) => {
+      this.rotateToFace(data.face);
+    });
+
     // Initial texture update
     this.updateAllTextures();
 
@@ -162,6 +166,56 @@ export class ThreePreview {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+  }
+
+  // Rotate camera to show the selected face
+  rotateToFace(faceName) {
+    // Keep camera at exactly the same distance as initial view (sqrt(48) ≈ 6.93)
+    // All positions maintain distance of 7 units from origin
+    const positions = {
+      front: { x: 1.5, y: 2.5, z: 6.2 },
+      back: { x: 1.5, y: 2.5, z: -6.2 },
+      left: { x: -6.2, y: 2.5, z: 1.5 },
+      right: { x: 6.2, y: 2.5, z: 1.5 },
+      top: { x: 1.5, y: 6.2, z: 2.5 },
+      bottom: { x: 1.5, y: -6.2, z: 2.5 }
+    };
+
+    const targetPosition = positions[faceName];
+    if (!targetPosition) return;
+
+    // Smoothly animate camera to new position
+    const startPosition = {
+      x: this.camera.position.x,
+      y: this.camera.position.y,
+      z: this.camera.position.z
+    };
+
+    const duration = 500; // milliseconds
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease-in-out function
+      const easeProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      this.camera.position.x = startPosition.x + (targetPosition.x - startPosition.x) * easeProgress;
+      this.camera.position.y = startPosition.y + (targetPosition.y - startPosition.y) * easeProgress;
+      this.camera.position.z = startPosition.z + (targetPosition.z - startPosition.z) * easeProgress;
+
+      this.camera.lookAt(0, 0, 0);
+      this.controls.update();
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
   }
 
   // Capture screenshot of the 3D preview

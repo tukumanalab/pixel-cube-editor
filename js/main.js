@@ -7,7 +7,6 @@ import { ColorPicker } from './editor/ColorPicker.js';
 import { ThreePreview } from './preview/ThreePreview.js';
 import { ImageExporter } from './export/ImageExporter.js';
 import { PDFExporter } from './export/PDFExporter.js';
-import { DataExporter } from './export/DataExporter.js';
 
 class App {
   constructor() {
@@ -47,7 +46,6 @@ class App {
     // Initialize exporters
     this.imageExporter = new ImageExporter(this.editorState);
     this.pdfExporter = new PDFExporter(this.editorState);
-    this.dataExporter = new DataExporter(this.editorState);
   }
 
   initEventListeners() {
@@ -108,78 +106,70 @@ class App {
       }
     });
 
-    // Face copy functionality
-    const pasteBtn = document.getElementById('paste-face-btn');
-    const targetSelect = document.getElementById('target-face-select');
+    // Export modal functionality
+    const exportBtn = document.getElementById('export-btn');
+    const exportModal = document.getElementById('export-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelExportBtn = document.getElementById('cancel-export-btn');
+    const executeExportBtn = document.getElementById('execute-export-btn');
+    const faceSizeSlider = document.getElementById('face-size');
+    const sizeValue = document.getElementById('size-value');
 
-    if (pasteBtn && targetSelect) {
-      pasteBtn.addEventListener('click', () => {
-        const sourceFace = this.editorState.currentFace;
-        const targetFace = targetSelect.value;
-        this.editorState.copyFace(sourceFace, targetFace);
-        this.history.saveState();
-        alert(`${sourceFace}面を${targetFace}面に貼り付けました`);
+    // Show modal
+    if (exportBtn && exportModal) {
+      exportBtn.addEventListener('click', () => {
+        exportModal.style.display = 'flex';
       });
     }
 
-    // Export functionality
-    const exportSelect = document.getElementById('export-select');
-    if (exportSelect) {
-      exportSelect.addEventListener('change', (e) => {
-        const value = e.target.value;
-        if (!value) return;
+    // Hide modal
+    const hideModal = () => {
+      if (exportModal) {
+        exportModal.style.display = 'none';
+      }
+    };
 
-        switch (value) {
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', hideModal);
+    }
+
+    if (cancelExportBtn) {
+      cancelExportBtn.addEventListener('click', hideModal);
+    }
+
+    // Update size value display
+    if (faceSizeSlider && sizeValue) {
+      faceSizeSlider.addEventListener('input', (e) => {
+        sizeValue.textContent = e.target.value;
+      });
+    }
+
+    // Execute export
+    if (executeExportBtn) {
+      executeExportBtn.addEventListener('click', () => {
+        const exportType = document.querySelector('input[name="export-type"]:checked')?.value;
+        const faceSize = parseInt(faceSizeSlider?.value || '40');
+
+        if (!exportType) {
+          alert('エクスポート種別を選択してください');
+          return;
+        }
+
+        switch (exportType) {
           case 'png':
-            this.imageExporter.exportAllFaces();
+            this.imageExporter.exportAllFaces(faceSize);
             alert('6面のPNG画像をエクスポートしています...');
             break;
           case 'pdf':
-            // Optionally include 3D preview
-            const include3D = confirm('3DプレビューをPDFに含めますか?');
-            let previewDataURL = null;
-            if (include3D && this.threePreview) {
-              previewDataURL = this.threePreview.captureScreenshot();
-            }
-            this.pdfExporter.exportPDF(include3D, previewDataURL);
+            this.imageExporter.exportAllFacesAsPDF(faceSize);
+            alert('6面のPDFをエクスポートしています...');
             break;
-          case 'json':
-            this.dataExporter.exportJSON();
-            break;
-          case 'texture-atlas':
-            this.imageExporter.exportTextureAtlas();
+          case 'papercraft':
+            this.imageExporter.exportPaperCraftNet(faceSize);
             break;
         }
 
-        // Reset select
-        e.target.value = '';
-      });
-    }
-
-    // Import functionality
-    const importBtn = document.getElementById('import-json-btn');
-    const importInput = document.getElementById('import-file-input');
-
-    if (importBtn && importInput) {
-      importBtn.addEventListener('click', () => {
-        importInput.click();
-      });
-
-      importInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-          await this.dataExporter.importJSON(file);
-          this.history.saveState();
-          alert('JSONファイルをインポートしました');
-        } catch (error) {
-          alert(`インポートエラー: ${error.message}`);
-          console.error('Import error:', error);
-        }
-
-        // Reset input
-        e.target.value = '';
+        hideModal();
       });
     }
   }

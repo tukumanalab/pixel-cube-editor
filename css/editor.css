@@ -1,14 +1,14 @@
 /* editor.css - ピクセルグリッドエディタースタイル */
 
 .editor-section {
-  min-height: 600px;
+  min-height: 400px;
 }
 
 .pixel-grid-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 500px;
+  min-height: 300px;
   padding: 1rem;
 }
 
@@ -30,7 +30,7 @@
   border: 2px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f5f5;
   position: relative;
 }
 

@@ -13,75 +13,86 @@
     <header class="app-header">
       <h1>Pixel Cube Editor</h1>
       <div class="header-actions">
-        <select id="export-select" class="btn-primary">
-          <option value="">エクスポート ▾</option>
-          <option value="png">PNG画像 (全6面)</option>
-          <option value="pdf">PDFドキュメント</option>
-          <option value="json">JSONデータ</option>
-          <option value="texture-atlas">テクスチャアトラス</option>
-        </select>
-        <button id="import-json-btn" class="btn-secondary">JSONインポート</button>
-        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        <button id="export-btn" class="btn-primary">エクスポート</button>
       </div>
     </header>
 
-    <div class="app-layout">
-      <!-- Top Section: Controls -->
-      <div class="controls-section">
-        <!-- Face Selector -->
-        <div class="face-selector">
-          <h3>面を選択</h3>
-          <div class="face-tabs">
-            <button class="face-tab active" data-face="front">Front</button>
-            <button class="face-tab" data-face="back">Back</button>
-            <button class="face-tab" data-face="left">Left</button>
-            <button class="face-tab" data-face="right">Right</button>
-            <button class="face-tab" data-face="top">Top</button>
-            <button class="face-tab" data-face="bottom">Bottom</button>
-          </div>
-
-          <!-- Face Copy -->
-          <div class="face-copy">
-            <h4>面をコピー</h4>
-            <div class="face-copy-controls">
-              <button id="paste-face-btn" class="btn-small">貼り付け</button>
-              <select id="target-face-select" class="select-small">
-                <option value="front">Front</option>
-                <option value="back">Back</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-              </select>
-            </div>
-          </div>
-        </div>
+    <!-- Toolbar Area -->
+    <div class="app-toolbar">
+      <div class="history-controls">
+        <button id="undo-btn" class="btn-icon" title="元に戻す (Ctrl+Z)" disabled>↶ Undo</button>
+        <button id="redo-btn" class="btn-icon" title="やり直し (Ctrl+Y)" disabled>↷ Redo</button>
       </div>
+      <div class="color-controls">
+        <input type="color" id="color-picker" value="#000000">
+        <button id="add-color-btn" class="btn-icon" title="パレットに追加">→</button>
+      </div>
+      <div id="palette-grid" class="palette-grid"></div>
+    </div>
 
-      <!-- Bottom Section: Preview and Editor -->
+    <div class="app-layout">
+      <!-- Main Section: Preview and Editor -->
       <div class="main-section">
         <!-- 3D Preview -->
         <div class="preview-section">
-          <h2>3D Preview</h2>
           <div id="three-preview" class="preview-container"></div>
         </div>
 
         <!-- Pixel Editor -->
         <div class="editor-section">
-          <h2>Pixel Editor - <span id="current-face-label">Front</span></h2>
-          <div class="editor-toolbar">
-            <div class="history-controls">
-              <button id="undo-btn" class="btn-icon" title="元に戻す (Ctrl+Z)" disabled>↶ Undo</button>
-              <button id="redo-btn" class="btn-icon" title="やり直し (Ctrl+Y)" disabled>↷ Redo</button>
+          <!-- Face Selector -->
+          <div class="face-selector">
+            <div class="face-tabs">
+              <button class="face-tab active" data-face="front">Front</button>
+              <button class="face-tab" data-face="back">Back</button>
+              <button class="face-tab" data-face="left">Left</button>
+              <button class="face-tab" data-face="right">Right</button>
+              <button class="face-tab" data-face="top">Top</button>
+              <button class="face-tab" data-face="bottom">Bottom</button>
             </div>
-            <div class="color-controls">
-              <input type="color" id="color-picker" value="#000000">
-              <button id="add-color-btn" class="btn-icon" title="パレットに追加">→</button>
-            </div>
-            <div id="palette-grid" class="palette-grid"></div>
           </div>
           <div id="pixel-grid-container" class="pixel-grid-container"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>エクスポート設定</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>エクスポート種別</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="export-type" value="png" checked>
+              PNG (全6面)
+            </label>
+            <label>
+              <input type="radio" name="export-type" value="pdf">
+              PDF (全6面)
+            </label>
+            <label>
+              <input type="radio" name="export-type" value="papercraft">
+              展開図
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="face-size">一辺のサイズ: <span id="size-value">40</span>mm</label>
+          <input type="range" id="face-size" min="10" max="50" value="40" step="1">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancel-export-btn" class="btn-secondary">キャンセル</button>
+        <button id="execute-export-btn" class="btn-primary">エクスポート</button>
       </div>
     </div>
   </div>
