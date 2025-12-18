@@ -14,6 +14,7 @@ export class EditorState {
 
     this.currentFace = 'front';
     this.currentColor = '#000000';
+    this.brushSize = 1; // 1, 2, or 3 pixels
     this.tool = 'draw'; // Future: 'draw', 'fill', 'eyedropper'
 
     // Observer pattern - event listeners
@@ -105,6 +106,13 @@ export class EditorState {
     if (!this.faces[face]) return;
     this.currentFace = face;
     this.notify('faceChange', { face });
+  }
+
+  // Set brush size
+  setBrushSize(size) {
+    if (size < 1 || size > 3) return;
+    this.brushSize = size;
+    this.notify('brushSizeChange', { size });
   }
 
   // Copy one face to another

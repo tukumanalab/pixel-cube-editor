@@ -81,6 +81,20 @@ class App {
       this.updateCurrentFaceLabel(data.face);
     });
 
+    // Brush size buttons
+    const brushButtons = document.querySelectorAll('.btn-brush');
+    brushButtons.forEach((btn, index) => {
+      const size = index + 1; // 1, 2, or 3
+      btn.addEventListener('click', () => {
+        // Update active state
+        brushButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update editor state
+        this.editorState.setBrushSize(size);
+      });
+    });
+
     // Undo/Redo buttons
     const undoBtn = document.getElementById('undo-btn');
     const redoBtn = document.getElementById('redo-btn');

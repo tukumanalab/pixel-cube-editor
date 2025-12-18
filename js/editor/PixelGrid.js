@@ -97,20 +97,33 @@ export class PixelGrid {
 
   drawPixel(e) {
     const pos = getMousePos(this.canvas, e);
-    const x = Math.floor(pos.x / this.cellSize);
-    const y = Math.floor(pos.y / this.cellSize);
+    const centerX = Math.floor(pos.x / this.cellSize);
+    const centerY = Math.floor(pos.y / this.cellSize);
 
     // Check bounds
-    if (x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) return;
+    if (centerX < 0 || centerX >= this.gridSize || centerY < 0 || centerY >= this.gridSize) return;
 
     // Prevent drawing same cell multiple times in one drag
-    const cellKey = `${x},${y}`;
+    const cellKey = `${centerX},${centerY}`;
     if (this.lastDrawnCell === cellKey) return;
     this.lastDrawnCell = cellKey;
 
     const face = this.editorState.currentFace;
     const color = this.editorState.currentColor;
-    this.editorState.setPixel(face, x, y, color);
+    const brushSize = this.editorState.brushSize;
+
+    // Draw with brush size
+    const offset = Math.floor(brushSize / 2);
+    for (let dy = 0; dy < brushSize; dy++) {
+      for (let dx = 0; dx < brushSize; dx++) {
+        const x = centerX - offset + dx;
+        const y = centerY - offset + dy;
+        // Only draw if within bounds
+        if (x >= 0 && x < this.gridSize && y >= 0 && y < this.gridSize) {
+          this.editorState.setPixel(face, x, y, color);
+        }
+      }
+    }
   }
 
   render() {

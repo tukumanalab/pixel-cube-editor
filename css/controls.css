@@ -45,6 +45,50 @@
   gap: 0.5rem;
 }
 
+/* Brush Size Controls */
+.brush-size-controls {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.btn-brush {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btn-brush:nth-child(1) {
+  font-size: 8px;
+}
+
+.btn-brush:nth-child(2) {
+  font-size: 12px;
+}
+
+.btn-brush:nth-child(3) {
+  font-size: 16px;
+}
+
+.btn-brush:hover {
+  border-color: var(--primary-color);
+  background-color: var(--background-color);
+}
+
+.btn-brush.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
 /* Color Palette */
 .palette-grid {
   display: flex;
