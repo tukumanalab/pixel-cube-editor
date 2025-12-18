@@ -12,8 +12,11 @@ export class ThreePreview {
     this.renderer = null;
     this.cube = null;
     this.materials = [];
+    this.faceOverlays = [];
     this.controls = null;
     this.animationId = null;
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
 
     this.init();
   }
@@ -57,6 +60,12 @@ export class ThreePreview {
     // Handle window resize
     window.addEventListener('resize', () => this.onWindowResize());
 
+    // Handle cube face clicks for flash effect
+    this.renderer.domElement.addEventListener('click', (event) => this.onCanvasClick(event));
+
+    // Handle hover to show clickable cursor
+    this.renderer.domElement.addEventListener('mousemove', (event) => this.onCanvasMouseMove(event));
+
     // Subscribe to state changes
     this.editorState.subscribe('pixelChange', (data) => {
       this.updateFaceTexture(data.face);
@@ -99,6 +108,43 @@ export class ThreePreview {
     // Add slight rotation for better initial view
     this.cube.rotation.y = Math.PI / 6;
     this.cube.rotation.x = Math.PI / 12;
+
+    // Create overlay planes for each face
+    this.createFaceOverlays();
+  }
+
+  createFaceOverlays() {
+    // Create semi-transparent overlay planes for each face
+    // Face positions and rotations match the cube faces
+    const faceConfigs = [
+      { position: [1.01, 0, 0], rotation: [0, Math.PI / 2, 0] },   // right
+      { position: [-1.01, 0, 0], rotation: [0, -Math.PI / 2, 0] }, // left
+      { position: [0, 1.01, 0], rotation: [-Math.PI / 2, 0, 0] },  // top
+      { position: [0, -1.01, 0], rotation: [Math.PI / 2, 0, 0] },  // bottom
+      { position: [0, 0, 1.01], rotation: [0, 0, 0] },             // front
+      { position: [0, 0, -1.01], rotation: [0, Math.PI, 0] }       // back
+    ];
+
+    faceConfigs.forEach(config => {
+      // Create a plane geometry for this face overlay
+      const planeGeometry = new THREE.PlaneGeometry(2, 2);
+      const overlayMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffaa00,
+        transparent: true,
+        opacity: 0,
+        depthTest: false
+      });
+      const overlayMesh = new THREE.Mesh(planeGeometry, overlayMaterial);
+
+      // Position and rotate the overlay to match the cube face
+      // Slightly offset from cube surface to prevent z-fighting
+      overlayMesh.position.set(...config.position);
+      overlayMesh.rotation.set(...config.rotation);
+
+      // Add to scene and store reference
+      this.cube.add(overlayMesh);
+      this.faceOverlays.push(overlayMesh);
+    });
   }
 
   createFaceCanvas() {
@@ -218,6 +264,95 @@ export class ThreePreview {
     animate();
   }
 
+  // Handle click on canvas to flash the clicked face
+  onCanvasClick(event) {
+    // Calculate mouse position in normalized device coordinates (-1 to +1)
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Cast ray from camera through mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Check for intersections with the cube (not its children)
+    const intersects = this.raycaster.intersectObject(this.cube, false);
+
+    console.log('Click detected, intersects:', intersects.length);
+
+    if (intersects.length > 0) {
+      // Get the face index from the intersection
+      const faceIndex = Math.floor(intersects[0].faceIndex / 2);
+      console.log('Face index:', faceIndex);
+
+      // Map material index to face name
+      // Three.js BoxGeometry face order: right, left, top, bottom, front, back
+      const faceMap = ['right', 'left', 'top', 'bottom', 'front', 'back'];
+      const faceName = faceMap[faceIndex];
+
+      if (faceName) {
+        // Flash the clicked face
+        this.flashFace(faceIndex);
+
+        // Update the current face in editor state (this will update the face selector buttons)
+        this.editorState.setCurrentFace(faceName);
+      }
+    }
+  }
+
+  // Flash effect for clicked face (semi-transparent overlay)
+  flashFace(materialIndex) {
+    const overlay = this.faceOverlays[materialIndex];
+    console.log('flashFace called, materialIndex:', materialIndex, 'overlay:', overlay);
+    if (!overlay) return;
+
+    const material = overlay.material;
+    console.log('Setting opacity to 0.5, current opacity:', material.opacity);
+
+    // Set to semi-transparent orange glow (50% opacity)
+    material.opacity = 0.5;
+
+    // Animate fade out
+    const duration = 500; // milliseconds
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease-out function for smooth fade
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+      // Fade opacity from 0.5 to 0
+      material.opacity = 0.5 * (1 - easeProgress);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // Ensure it's fully transparent at the end
+        material.opacity = 0;
+      }
+    };
+
+    animate();
+  }
+
+  // Handle mouse move to show pointer cursor over cube
+  onCanvasMouseMove(event) {
+    // Calculate mouse position in normalized device coordinates (-1 to +1)
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Cast ray from camera through mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Check for intersections with the cube
+    const intersects = this.raycaster.intersectObject(this.cube, false);
+
+    // Change cursor style based on whether we're hovering over the cube
+    this.renderer.domElement.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+  }
+
   // Capture screenshot of the 3D preview
   captureScreenshot() {
     this.renderer.render(this.scene, this.camera);
@@ -241,6 +376,16 @@ export class ThreePreview {
         mat.map.dispose();
       }
       mat.dispose();
+    });
+
+    // Clean up overlay meshes
+    this.faceOverlays.forEach(overlay => {
+      if (overlay.geometry) {
+        overlay.geometry.dispose();
+      }
+      if (overlay.material) {
+        overlay.material.dispose();
+      }
     });
 
     if (this.cube) {

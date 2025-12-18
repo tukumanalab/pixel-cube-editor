@@ -66,6 +66,21 @@ class App {
       });
     });
 
+    // Subscribe to face change events to update face tabs
+    this.editorState.subscribe('faceChange', (data) => {
+      // Update active state on face tabs
+      faceTabs.forEach(tab => {
+        if (tab.dataset.face === data.face) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      // Update face label
+      this.updateCurrentFaceLabel(data.face);
+    });
+
     // Undo/Redo buttons
     const undoBtn = document.getElementById('undo-btn');
     const redoBtn = document.getElementById('redo-btn');
