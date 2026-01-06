@@ -4,12 +4,25 @@ export class BlockImporter {
   constructor() {
     this.blockList = [];
     this.currentBlockData = null;
+    // Detect base path for GitHub Pages support
+    this.basePath = this.getBasePath();
+  }
+
+  // Get base path (works for both localhost and GitHub Pages)
+  getBasePath() {
+    const path = window.location.pathname;
+    // If running on GitHub Pages (e.g., /pixel-cube-editor/), extract base path
+    if (path.includes('/pixel-cube-editor/')) {
+      return '/pixel-cube-editor';
+    }
+    // Default to root for localhost
+    return '';
   }
 
   // Load list of available blocks
   async loadBlockList() {
     try {
-      const response = await fetch('/resource/json/_list.json');
+      const response = await fetch(`${this.basePath}/resource/json/_list.json`);
       if (!response.ok) {
         // Fallback: scan directory for JSON files
         return this.scanBlockDirectory();
@@ -46,7 +59,7 @@ export class BlockImporter {
       const existingBlocks = [];
       for (const block of commonBlocks) {
         try {
-          const response = await fetch(`/resource/json/${block}.json`, { method: 'HEAD' });
+          const response = await fetch(`${this.basePath}/resource/json/${block}.json`, { method: 'HEAD' });
           if (response.ok) {
             existingBlocks.push(block);
           }
@@ -67,7 +80,7 @@ export class BlockImporter {
   async loadBlock(blockName) {
     try {
       console.log('Loading block:', blockName);
-      const response = await fetch(`/resource/json/${blockName}.json`);
+      const response = await fetch(`${this.basePath}/resource/json/${blockName}.json`);
       if (!response.ok) {
         throw new Error(`Block ${blockName} not found`);
       }
@@ -158,7 +171,7 @@ export class BlockImporter {
     // Remove "minecraft:block/" or "block/" prefix if present
     let textureName = textureRef.replace('minecraft:block/', '');
     textureName = textureName.replace('block/', '');
-    return `/resource/textures/${textureName}.png`;
+    return `${this.basePath}/resource/textures/${textureName}.png`;
   }
 
   // Load PNG image and convert to color array
