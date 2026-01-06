@@ -106,7 +106,7 @@ export class BlockImporter {
 
     if (parent.includes('cube_all')) {
       // All faces use the same texture
-      const texture = textures.all || textures.texture;
+      const texture = textures.all || textures.texture || textures.particle;
       faceMapping = {
         top: texture,
         bottom: texture,
@@ -118,42 +118,42 @@ export class BlockImporter {
     } else if (parent.includes('orientable')) {
       // Front, side, top pattern
       faceMapping = {
-        top: textures.top || textures.texture,
-        bottom: textures.top || textures.side || textures.texture,
-        front: textures.front || textures.texture,
-        back: textures.side || textures.texture,
-        left: textures.side || textures.texture,
-        right: textures.side || textures.texture
+        top: textures.top || textures.texture || textures.particle,
+        bottom: textures.top || textures.side || textures.texture || textures.particle,
+        front: textures.front || textures.texture || textures.particle,
+        back: textures.side || textures.texture || textures.particle,
+        left: textures.side || textures.texture || textures.particle,
+        right: textures.side || textures.texture || textures.particle
       };
     } else if (parent.includes('cube_column')) {
       // End (top/bottom) and side pattern
       faceMapping = {
-        top: textures.end || textures.texture,
-        bottom: textures.end || textures.texture,
-        front: textures.side || textures.texture,
-        back: textures.side || textures.texture,
-        left: textures.side || textures.texture,
-        right: textures.side || textures.texture
+        top: textures.end || textures.texture || textures.particle,
+        bottom: textures.end || textures.texture || textures.particle,
+        front: textures.side || textures.texture || textures.particle,
+        back: textures.side || textures.texture || textures.particle,
+        left: textures.side || textures.texture || textures.particle,
+        right: textures.side || textures.texture || textures.particle
       };
     } else if (parent.includes('cube')) {
       // Generic cube - try to map available textures
       faceMapping = {
-        top: textures.top || textures.up || textures.all || textures.texture,
-        bottom: textures.bottom || textures.down || textures.all || textures.texture,
-        front: textures.front || textures.north || textures.side || textures.all || textures.texture,
-        back: textures.back || textures.south || textures.side || textures.all || textures.texture,
-        left: textures.left || textures.west || textures.side || textures.all || textures.texture,
-        right: textures.right || textures.east || textures.side || textures.all || textures.texture
+        top: textures.top || textures.up || textures.all || textures.texture || textures.particle,
+        bottom: textures.bottom || textures.down || textures.all || textures.texture || textures.particle,
+        front: textures.front || textures.north || textures.side || textures.all || textures.texture || textures.particle,
+        back: textures.back || textures.south || textures.side || textures.all || textures.texture || textures.particle,
+        left: textures.left || textures.west || textures.side || textures.all || textures.texture || textures.particle,
+        right: textures.right || textures.east || textures.side || textures.all || textures.texture || textures.particle
       };
     } else {
       // Unknown parent, try to use whatever textures are available
       faceMapping = {
-        top: textures.top || textures.up || textures.all || textures.side || textures.texture,
-        bottom: textures.bottom || textures.down || textures.all || textures.side || textures.texture,
-        front: textures.front || textures.north || textures.all || textures.side || textures.texture,
-        back: textures.back || textures.south || textures.all || textures.side || textures.texture,
-        left: textures.left || textures.west || textures.all || textures.side || textures.texture,
-        right: textures.right || textures.east || textures.all || textures.side || textures.texture
+        top: textures.top || textures.up || textures.all || textures.side || textures.texture || textures.particle,
+        bottom: textures.bottom || textures.down || textures.all || textures.side || textures.texture || textures.particle,
+        front: textures.front || textures.north || textures.all || textures.side || textures.texture || textures.particle,
+        back: textures.back || textures.south || textures.all || textures.side || textures.texture || textures.particle,
+        left: textures.left || textures.west || textures.all || textures.side || textures.texture || textures.particle,
+        right: textures.right || textures.east || textures.all || textures.side || textures.texture || textures.particle
       };
     }
 
