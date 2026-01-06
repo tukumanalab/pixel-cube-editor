@@ -1,7 +1,9 @@
 // ImageExporter.js - Export faces as PNG images
 
 import { downloadDataURL } from '../utils/helpers.js';
-import jsPDF from 'jspdf';
+
+// jsPDF is loaded globally via script tag in index.html
+const { jsPDF } = window.jspdf || window;
 
 export class ImageExporter {
   constructor(editorState) {

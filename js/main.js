@@ -7,6 +7,7 @@ import { ColorPicker } from './editor/ColorPicker.js';
 import { ThreePreview } from './preview/ThreePreview.js';
 import { ImageExporter } from './export/ImageExporter.js';
 import { PDFExporter } from './export/PDFExporter.js';
+import { BlockImporter } from './import/BlockImporter.js';
 
 class App {
   constructor() {
@@ -46,6 +47,36 @@ class App {
     // Initialize exporters
     this.imageExporter = new ImageExporter(this.editorState);
     this.pdfExporter = new PDFExporter(this.editorState);
+
+    // Initialize importer
+    this.blockImporter = new BlockImporter();
+    this.initBlockImporter();
+  }
+
+  async initBlockImporter() {
+    try {
+      // Load block list
+      console.log('Loading block list...');
+      const blocks = await this.blockImporter.loadBlockList();
+      console.log(`Loaded ${blocks.length} blocks`);
+
+      // Populate dropdown
+      const blockSelector = document.getElementById('block-selector');
+      if (blockSelector) {
+        blockSelector.innerHTML = '<option value="">ブロックを選択...</option>';
+        blocks.forEach(blockName => {
+          const option = document.createElement('option');
+          option.value = blockName;
+          option.textContent = blockName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          blockSelector.appendChild(option);
+        });
+        console.log('Block selector populated');
+      } else {
+        console.error('Block selector element not found');
+      }
+    } catch (error) {
+      console.error('Error initializing block importer:', error);
+    }
   }
 
   initEventListeners() {
@@ -199,6 +230,132 @@ class App {
         }
 
         hideModal();
+      });
+    }
+
+    // Import modal functionality
+    const importBtn = document.getElementById('import-btn');
+    const importModal = document.getElementById('import-modal');
+    const closeImportModalBtn = document.getElementById('close-import-modal-btn');
+    const cancelImportBtn = document.getElementById('cancel-import-btn');
+    const executeImportBtn = document.getElementById('execute-import-btn');
+    const blockSelector = document.getElementById('block-selector');
+    const blockPreview = document.getElementById('block-preview');
+    const blockPreviewImages = document.getElementById('block-preview-images');
+
+    // Show import modal
+    if (importBtn && importModal) {
+      importBtn.addEventListener('click', () => {
+        importModal.style.display = 'flex';
+      });
+    }
+
+    // Hide import modal
+    const hideImportModal = () => {
+      if (importModal) {
+        importModal.style.display = 'none';
+      }
+      if (blockPreview) {
+        blockPreview.style.display = 'none';
+      }
+      if (executeImportBtn) {
+        executeImportBtn.disabled = true;
+      }
+    };
+
+    if (closeImportModalBtn) {
+      closeImportModalBtn.addEventListener('click', hideImportModal);
+    }
+
+    if (cancelImportBtn) {
+      cancelImportBtn.addEventListener('click', hideImportModal);
+    }
+
+    // Block selector change
+    if (blockSelector) {
+      blockSelector.addEventListener('change', async (e) => {
+        const blockName = e.target.value;
+        console.log('Block selected:', blockName);
+
+        if (!blockName) {
+          if (blockPreview) blockPreview.style.display = 'none';
+          if (executeImportBtn) executeImportBtn.disabled = true;
+          return;
+        }
+
+        try {
+          // Load block preview
+          console.log('Loading preview for:', blockName);
+          const previews = await this.blockImporter.getBlockPreviewUrls(blockName);
+          console.log('Got previews:', previews);
+
+          // Show preview images
+          if (blockPreviewImages && Object.keys(previews).length > 0) {
+            blockPreviewImages.innerHTML = '';
+            for (const [textureRef, url] of Object.entries(previews)) {
+              console.log('Creating preview image:', textureRef, url);
+              const img = document.createElement('img');
+              img.src = url;
+              img.alt = textureRef;
+              img.style.width = '64px';
+              img.style.height = '64px';
+              img.style.imageRendering = 'pixelated';
+              img.style.margin = '4px';
+              img.onerror = () => console.error('Failed to load image:', url);
+              img.onload = () => console.log('Image loaded:', url);
+              blockPreviewImages.appendChild(img);
+            }
+            if (blockPreview) blockPreview.style.display = 'block';
+          } else {
+            console.warn('No preview images to show');
+          }
+
+          if (executeImportBtn) executeImportBtn.disabled = false;
+        } catch (error) {
+          console.error('Error loading block preview:', error);
+          if (executeImportBtn) executeImportBtn.disabled = true;
+        }
+      });
+    } else {
+      console.error('Block selector not found in event listeners');
+    }
+
+    // Execute import
+    if (executeImportBtn) {
+      executeImportBtn.addEventListener('click', async () => {
+        const blockName = blockSelector?.value;
+
+        if (!blockName) {
+          alert('ブロックを選択してください');
+          return;
+        }
+
+        try {
+          executeImportBtn.disabled = true;
+          executeImportBtn.textContent = '読み込み中...';
+
+          // Import block
+          const faces = await this.blockImporter.importBlock(blockName);
+
+          // Load into editor
+          const success = this.editorState.loadFaces(faces);
+
+          if (success) {
+            // Add to history
+            this.history.saveState();
+
+            alert(`${blockName} をインポートしました！`);
+            hideImportModal();
+          } else {
+            alert('インポートに失敗しました');
+          }
+        } catch (error) {
+          console.error('Error importing block:', error);
+          alert('インポート中にエラーが発生しました: ' + error.message);
+        } finally {
+          executeImportBtn.disabled = false;
+          executeImportBtn.textContent = 'インポート';
+        }
       });
     }
   }
