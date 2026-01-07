@@ -121,6 +121,14 @@
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
 }
 
+.palette-color.hover-highlight {
+  border-color: #00BFFF;
+  border-width: 3px;
+  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.4), 0 0 8px rgba(0, 191, 255, 0.6);
+  transform: scale(1.15);
+  z-index: 2;
+}
+
 .palette-color .remove-color {
   position: absolute;
   bottom: 100%;

@@ -53,6 +53,11 @@ export class ColorPicker {
       this.renderFaceColors();
     });
 
+    // Subscribe to pixel hover events
+    this.editorState.subscribe('pixelHover', (data) => {
+      this.highlightHoveredColor(data.color);
+    });
+
     // Render palette
     this.renderPalette();
     this.renderFaceColors();
@@ -71,6 +76,7 @@ export class ColorPicker {
       colorDiv.className = 'palette-color';
       colorDiv.style.backgroundColor = color;
       colorDiv.title = color;
+      colorDiv.dataset.color = color;
 
       // Check if current color
       if (color === this.editorState.currentColor) {
@@ -164,6 +170,7 @@ export class ColorPicker {
       colorDiv.className = 'palette-color face-color';
       colorDiv.style.backgroundColor = color;
       colorDiv.title = color;
+      colorDiv.dataset.color = color;
 
       // Check if current color
       if (color === this.editorState.currentColor) {
@@ -178,6 +185,31 @@ export class ColorPicker {
       });
 
       this.faceColorsContainer.appendChild(colorDiv);
+    });
+  }
+
+  // Highlight palette colors matching the hovered pixel color
+  highlightHoveredColor(color) {
+    // Get all palette colors (both rows)
+    const allPaletteColors = [
+      ...this.paletteContainer.querySelectorAll('.palette-color'),
+      ...this.faceColorsContainer.querySelectorAll('.palette-color')
+    ];
+
+    // Remove all hover-highlight classes
+    allPaletteColors.forEach(el => {
+      el.classList.remove('hover-highlight');
+    });
+
+    // If color is null, we're done (mouse left the grid)
+    if (!color) return;
+
+    // Add hover-highlight to matching colors
+    allPaletteColors.forEach(el => {
+      const elColor = el.dataset.color || el.title;
+      if (elColor && elColor.toUpperCase() === color.toUpperCase()) {
+        el.classList.add('hover-highlight');
+      }
     });
   }
 }

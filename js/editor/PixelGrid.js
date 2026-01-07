@@ -30,7 +30,10 @@ export class PixelGrid {
     this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
     this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
     this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
-    this.canvas.addEventListener('mouseleave', () => this.handleMouseUp());
+    this.canvas.addEventListener('mouseleave', () => {
+      this.handleMouseUp();
+      this.handleMouseLeave();
+    });
 
     // Touch support for mobile
     this.canvas.addEventListener('touchstart', (e) => {
@@ -86,13 +89,37 @@ export class PixelGrid {
   }
 
   handleMouseMove(e) {
-    if (!this.isDrawing) return;
-    this.drawPixel(e);
+    if (this.isDrawing) {
+      this.drawPixel(e);
+    } else {
+      // Emit hover event when not drawing
+      this.handlePixelHover(e);
+    }
   }
 
   handleMouseUp() {
     this.isDrawing = false;
     this.lastDrawnCell = null;
+  }
+
+  handlePixelHover(e) {
+    const pos = getMousePos(this.canvas, e);
+    const x = Math.floor(pos.x / this.cellSize);
+    const y = Math.floor(pos.y / this.cellSize);
+
+    // Check bounds
+    if (x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) return;
+
+    const face = this.editorState.currentFace;
+    const color = this.editorState.getPixel(face, x, y);
+
+    // Notify listeners about hover color
+    this.editorState.notify('pixelHover', { color });
+  }
+
+  handleMouseLeave() {
+    // Clear hover state
+    this.editorState.notify('pixelHover', { color: null });
   }
 
   drawPixel(e) {
