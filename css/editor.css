@@ -19,10 +19,6 @@
   cursor: crosshair;
 }
 
-.pixel-grid-container canvas:hover {
-  border-color: var(--primary-color);
-}
-
 /* 3D Preview */
 .preview-container {
   width: 100%;
