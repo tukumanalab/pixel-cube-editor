@@ -189,4 +189,35 @@ export class EditorState {
   getAllFaces() {
     return this.faces;
   }
+
+  // Replace color across faces
+  replaceColor(oldColor, newColor, scope = 'all') {
+    if (!oldColor || !newColor) return false;
+    if (oldColor.toUpperCase() === newColor.toUpperCase()) return false;
+
+    const oldColorUpper = oldColor.toUpperCase();
+    const newColorUpper = newColor.toUpperCase();
+
+    const facesToUpdate = scope === 'current'
+      ? [this.currentFace]
+      : ['top', 'bottom', 'front', 'back', 'left', 'right'];
+
+    let replacedCount = 0;
+    facesToUpdate.forEach(face => {
+      for (let y = 0; y < 16; y++) {
+        for (let x = 0; x < 16; x++) {
+          if (this.faces[face][y][x].toUpperCase() === oldColorUpper) {
+            this.faces[face][y][x] = newColorUpper;
+            replacedCount++;
+          }
+        }
+      }
+    });
+
+    if (replacedCount > 0) {
+      this.notify('stateRestored', { faces: this.faces });
+    }
+
+    return replacedCount;
+  }
 }

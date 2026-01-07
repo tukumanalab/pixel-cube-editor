@@ -358,6 +358,90 @@ class App {
         }
       });
     }
+
+    // Color Replace modal functionality
+    const replaceColorBtn = document.getElementById('replace-color-btn');
+    const replaceColorModal = document.getElementById('replace-color-modal');
+    const closeReplaceModalBtn = document.getElementById('close-replace-modal-btn');
+    const cancelReplaceBtn = document.getElementById('cancel-replace-btn');
+    const executeReplaceBtn = document.getElementById('execute-replace-btn');
+    const replaceOldColor = document.getElementById('replace-old-color');
+    const replaceNewColor = document.getElementById('replace-new-color');
+    const replaceOldColorLabel = document.getElementById('replace-old-color-label');
+    const replaceNewColorLabel = document.getElementById('replace-new-color-label');
+
+    // Show replace color modal
+    if (replaceColorBtn && replaceColorModal) {
+      replaceColorBtn.addEventListener('click', () => {
+        // Set current color as old color
+        if (replaceOldColor) {
+          replaceOldColor.value = this.editorState.currentColor;
+          replaceOldColorLabel.textContent = this.editorState.currentColor;
+        }
+        replaceColorModal.style.display = 'flex';
+      });
+    }
+
+    // Hide replace color modal
+    const hideReplaceModal = () => {
+      if (replaceColorModal) {
+        replaceColorModal.style.display = 'none';
+      }
+    };
+
+    if (closeReplaceModalBtn) {
+      closeReplaceModalBtn.addEventListener('click', hideReplaceModal);
+    }
+
+    if (cancelReplaceBtn) {
+      cancelReplaceBtn.addEventListener('click', hideReplaceModal);
+    }
+
+    // Update color labels
+    if (replaceOldColor && replaceOldColorLabel) {
+      replaceOldColor.addEventListener('input', (e) => {
+        replaceOldColorLabel.textContent = e.target.value.toUpperCase();
+      });
+    }
+
+    if (replaceNewColor && replaceNewColorLabel) {
+      replaceNewColor.addEventListener('input', (e) => {
+        replaceNewColorLabel.textContent = e.target.value.toUpperCase();
+      });
+    }
+
+    // Execute color replacement
+    if (executeReplaceBtn) {
+      executeReplaceBtn.addEventListener('click', () => {
+        const oldColor = replaceOldColor?.value;
+        const newColor = replaceNewColor?.value;
+        const scope = document.querySelector('input[name="replace-scope"]:checked')?.value || 'all';
+
+        if (!oldColor || !newColor) {
+          alert('色を選択してください');
+          return;
+        }
+
+        if (oldColor.toUpperCase() === newColor.toUpperCase()) {
+          alert('置換元と置換先の色が同じです');
+          return;
+        }
+
+        // Execute replacement
+        const replacedCount = this.editorState.replaceColor(oldColor, newColor, scope);
+
+        if (replacedCount > 0) {
+          // Save to history
+          this.history.saveState();
+
+          const scopeText = scope === 'current' ? '現在の面' : '全6面';
+          alert(`${scopeText}で ${replacedCount} 個のピクセルを置換しました！`);
+          hideReplaceModal();
+        } else {
+          alert('置換する色が見つかりませんでした');
+        }
+      });
+    }
   }
 
   updateCurrentFaceLabel(face) {

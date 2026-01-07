@@ -363,3 +363,38 @@ body {
   gap: 0.5rem;
   justify-content: center;
 }
+
+/* Color replace modal */
+.color-select-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background-color: var(--background-color);
+  border-radius: 4px;
+}
+
+.color-select-container input[type="color"] {
+  width: 60px;
+  height: 40px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.color-select-container input[type="color"]:hover {
+  border-color: var(--primary-color);
+}
+
+.color-select-container span {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--text-color);
+  min-width: 80px;
+}
+
+/* Tool controls */
+.tool-controls {
+  display: flex;
+  gap: 0.5rem;
+}

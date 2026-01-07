@@ -30,6 +30,9 @@
         <button id="brush-size-2" class="btn-brush" title="中太ペン (2px)">●</button>
         <button id="brush-size-3" class="btn-brush" title="太いペン (3px)">●</button>
       </div>
+      <div class="tool-controls">
+        <button id="replace-color-btn" class="btn-icon" title="色を置換">🎨 色を置換</button>
+      </div>
       <div class="color-controls">
         <input type="color" id="color-picker" value="#000000">
         <button id="add-color-btn" class="btn-icon" title="パレットに追加">→</button>
@@ -131,6 +134,53 @@
       <div class="modal-footer">
         <button id="cancel-export-btn" class="btn-secondary">キャンセル</button>
         <button id="execute-export-btn" class="btn-primary">エクスポート</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Replace Modal -->
+  <div id="replace-color-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>色を置換</h2>
+        <button id="close-replace-modal-btn" class="close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>置換元の色</label>
+          <div class="color-select-container">
+            <input type="color" id="replace-old-color" value="#000000">
+            <span id="replace-old-color-label">#000000</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>置換先の色</label>
+          <div class="color-select-container">
+            <input type="color" id="replace-new-color" value="#FFFFFF">
+            <span id="replace-new-color-label">#FFFFFF</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>対象範囲</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="replace-scope" value="current">
+              現在の面のみ
+            </label>
+            <label>
+              <input type="radio" name="replace-scope" value="all" checked>
+              全6面
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancel-replace-btn" class="btn-secondary">キャンセル</button>
+        <button id="execute-replace-btn" class="btn-primary">置換</button>
       </div>
     </div>
   </div>
