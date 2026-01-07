@@ -119,6 +119,8 @@
   border-color: var(--primary-color);
   border-width: 3px;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+  transform: scale(1.2);
+  z-index: 3;
 }
 
 .palette-color.hover-highlight {
