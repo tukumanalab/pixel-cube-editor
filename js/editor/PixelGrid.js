@@ -204,7 +204,7 @@ export class PixelGrid {
 
     // Draw hover highlight
     if (this.hoveredCell) {
-      this.ctx.strokeStyle = '#00BFFF';
+      this.ctx.strokeStyle = '#4a90e2';
       this.ctx.lineWidth = 2;
       this.ctx.strokeRect(
         this.hoveredCell.x * this.cellSize + 1,
