@@ -60,19 +60,20 @@ class App {
       const blocks = await this.blockImporter.loadBlockList();
       console.log(`Loaded ${blocks.length} blocks`);
 
-      // Populate dropdown
-      const blockSelector = document.getElementById('block-selector');
-      if (blockSelector) {
-        blockSelector.innerHTML = '<option value="">ブロックを選択...</option>';
+      // Populate datalist
+      const blockList = document.getElementById('block-list');
+      if (blockList) {
+        blockList.innerHTML = '';
         blocks.forEach(blockName => {
           const option = document.createElement('option');
           option.value = blockName;
-          option.textContent = blockName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          blockSelector.appendChild(option);
+          // Add readable label
+          option.label = blockName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          blockList.appendChild(option);
         });
-        console.log('Block selector populated');
+        console.log('Block list populated');
       } else {
-        console.error('Block selector element not found');
+        console.error('Block list element not found');
       }
     } catch (error) {
       console.error('Error initializing block importer:', error);
@@ -261,6 +262,9 @@ class App {
       if (executeImportBtn) {
         executeImportBtn.disabled = true;
       }
+      if (blockSelector) {
+        blockSelector.value = '';
+      }
     };
 
     if (closeImportModalBtn) {
@@ -271,10 +275,10 @@ class App {
       cancelImportBtn.addEventListener('click', hideImportModal);
     }
 
-    // Block selector change
+    // Block selector input (for datalist)
     if (blockSelector) {
-      blockSelector.addEventListener('change', async (e) => {
-        const blockName = e.target.value;
+      blockSelector.addEventListener('input', async (e) => {
+        const blockName = e.target.value.trim();
         console.log('Block selected:', blockName);
 
         if (!blockName) {
@@ -323,7 +327,7 @@ class App {
     // Execute import
     if (executeImportBtn) {
       executeImportBtn.addEventListener('click', async () => {
-        const blockName = blockSelector?.value;
+        const blockName = blockSelector?.value.trim();
 
         if (!blockName) {
           alert('ブロックを選択してください');

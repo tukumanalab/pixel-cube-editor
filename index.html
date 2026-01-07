@@ -81,9 +81,9 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="block-selector">ブロックを選択</label>
-          <select id="block-selector" class="block-selector">
-            <option value="">読み込み中...</option>
-          </select>
+          <input type="text" id="block-selector" class="block-selector" list="block-list" placeholder="ブロック名を入力..." autocomplete="off">
+          <datalist id="block-list">
+          </datalist>
         </div>
         <div id="block-preview" class="block-preview" style="display: none;">
           <p>プレビュー:</p>

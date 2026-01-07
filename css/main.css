@@ -335,13 +335,18 @@ body {
   border-radius: 4px;
   font-size: 0.95rem;
   background-color: white;
-  cursor: pointer;
+  cursor: text;
 }
 
 .block-selector:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.block-selector::placeholder {
+  color: #999;
+  font-style: italic;
 }
 
 .block-preview {
