@@ -4,6 +4,7 @@ export class ColorPicker {
   constructor(colorPickerElement, paletteContainer, editorState) {
     this.colorPickerElement = colorPickerElement;
     this.paletteContainer = paletteContainer;
+    this.faceColorsContainer = document.getElementById('face-colors-grid');
     this.editorState = editorState;
 
     // HTML basic 16 colors (non-deletable)
@@ -43,8 +44,18 @@ export class ColorPicker {
       });
     }
 
+    // Subscribe to state changes to update face colors
+    this.editorState.subscribe('stateRestored', () => {
+      this.renderFaceColors();
+    });
+
+    this.editorState.subscribe('pixelChange', () => {
+      this.renderFaceColors();
+    });
+
     // Render palette
     this.renderPalette();
+    this.renderFaceColors();
   }
 
   setColor(color) {
@@ -120,5 +131,53 @@ export class ColorPicker {
       this.palette = palette;
       this.renderPalette();
     }
+  }
+
+  // Extract all unique colors from 6 faces
+  extractFaceColors() {
+    const faces = this.editorState.getAllFaces();
+    const colorSet = new Set();
+
+    // Iterate through all 6 faces
+    Object.values(faces).forEach(face => {
+      // Each face is a 16x16 array
+      for (let y = 0; y < 16; y++) {
+        for (let x = 0; x < 16; x++) {
+          colorSet.add(face[y][x]);
+        }
+      }
+    });
+
+    // Convert Set to sorted array
+    return Array.from(colorSet).sort();
+  }
+
+  // Render face colors palette (second row)
+  renderFaceColors() {
+    if (!this.faceColorsContainer) return;
+
+    const faceColors = this.extractFaceColors();
+    this.faceColorsContainer.innerHTML = '';
+
+    faceColors.forEach(color => {
+      const colorDiv = document.createElement('div');
+      colorDiv.className = 'palette-color face-color';
+      colorDiv.style.backgroundColor = color;
+      colorDiv.title = color;
+
+      // Check if current color
+      if (color === this.editorState.currentColor) {
+        colorDiv.classList.add('selected');
+      }
+
+      // Click to select color
+      colorDiv.addEventListener('click', () => {
+        this.setColor(color);
+        this.renderPalette(); // Re-render to update selected state
+        this.renderFaceColors(); // Re-render to update selected state
+      });
+
+      this.faceColorsContainer.appendChild(colorDiv);
+    });
   }
 }
