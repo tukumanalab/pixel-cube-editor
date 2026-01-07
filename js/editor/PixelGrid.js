@@ -13,6 +13,7 @@ export class PixelGrid {
     this.gridSize = 16;
     this.isDrawing = false;
     this.lastDrawnCell = null; // Prevent drawing same cell multiple times
+    this.hoveredCell = null; // Track hovered cell for highlighting
 
     this.init();
   }
@@ -108,10 +109,18 @@ export class PixelGrid {
     const y = Math.floor(pos.y / this.cellSize);
 
     // Check bounds
-    if (x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) return;
+    if (x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) {
+      this.hoveredCell = null;
+      this.render();
+      return;
+    }
 
     const face = this.editorState.currentFace;
     const color = this.editorState.getPixel(face, x, y);
+
+    // Update hovered cell and re-render
+    this.hoveredCell = { x, y };
+    this.render();
 
     // Notify listeners about hover color
     this.editorState.notify('pixelHover', { color });
@@ -119,6 +128,8 @@ export class PixelGrid {
 
   handleMouseLeave() {
     // Clear hover state
+    this.hoveredCell = null;
+    this.render();
     this.editorState.notify('pixelHover', { color: null });
   }
 
@@ -189,6 +200,18 @@ export class PixelGrid {
       this.ctx.moveTo(0, i * this.cellSize + 0.5);
       this.ctx.lineTo(this.canvas.width, i * this.cellSize + 0.5);
       this.ctx.stroke();
+    }
+
+    // Draw hover highlight
+    if (this.hoveredCell) {
+      this.ctx.strokeStyle = '#00BFFF';
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(
+        this.hoveredCell.x * this.cellSize + 1,
+        this.hoveredCell.y * this.cellSize + 1,
+        this.cellSize - 2,
+        this.cellSize - 2
+      );
     }
   }
 
